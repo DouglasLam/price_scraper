@@ -1,0 +1,29 @@
+{
+    "https://www.cabelas.ca/product/4881/ruger-1022-22lr-rotary-magazine": {
+        "price_history": [
+            [
+                "2025-01-22",
+                34.99
+            ]
+        ],
+        "name": "Ruger\u00ae 10/22 .22LR Rotary Magazine"
+    },
+    "https://www.cabelas.ca/product/87847/tikka-t3x-lite-stainless-bolt-action-rifle": {
+        "price_history": [
+            [
+                "2025-01-22",
+                1299.99
+            ]
+        ],
+        "name": "Tikka\u00ae T3x Lite Stainless Bolt-Action Rifle"
+    },
+    "https://www.cabelas.ca/product/4883/ruger-1022-stainless-synthetic-semi-auto-rifle": {
+        "price_history": [
+            [
+                "2025-01-22",
+                569.99
+            ]
+        ],
+        "name": "Ruger\u00ae 10/22\u00ae Stainless Synthetic Semi-Auto Rifle"
+    }
+}
