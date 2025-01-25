@@ -7,6 +7,7 @@ import json
 import os
 from bs4 import BeautifulSoup
 from datetime import datetime
+from tabulate import tabulate
 
 data_file = 'price_data.json'
 
@@ -29,12 +30,30 @@ def write_price_data(output_data):
     with open(data_file, "w") as file:
         json.dump(output_data, file, indent=4)
 
+def output_prices_to_table(stored_data):
+    headers = ["Item", "Price", "Latest Date", "Previous Price", "Previous Date"]
+
+    data = []
+    for key, value in stored_data.items():
+        name = value['name']
+        price = value['price_history'][0][1]
+        date = value['price_history'][0][0]
+        previous_price = "N/A"
+        previous_date = "N/A"
+        if len(value['price_history']) > 1:
+            previous_price = value['price_history'][1][1]
+            previous_date = value['price_history'][1][0]
+        data.append([name, price, date, previous_price, previous_date])
+
+    print(tabulate(data, headers=headers, tablefmt="grid"))
+
+
 
 if __name__ == '__main__':
     item_list = [
-        'https://www.cabelas.ca/product/4881/ruger-1022-22lr-rotary-magazine',
         'https://www.cabelas.ca/product/87847/tikka-t3x-lite-stainless-bolt-action-rifle',
         'https://www.cabelas.ca/product/4883/ruger-1022-stainless-synthetic-semi-auto-rifle',
+        'https://www.cabelas.ca/product/4881/ruger-1022-22lr-rotary-magazine',
     ]
 
     # Get the current date and format the date as YYYY-MM-DD
@@ -61,6 +80,7 @@ if __name__ == '__main__':
             stored_data[url]['price_history'].insert(0, [formatted_date, queried_data[url]['price']])
     write_price_data(stored_data)
 
+    output_prices_to_table(stored_data)
 
 # import requests
 # from bs4 import BeautifulSoup
