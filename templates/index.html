@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Price Data</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .price-decrease {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Price Data</h1>
+    <table id="priceTable" class="display">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Image</th>
+                <th>Price</th>
+                <th>Date</th>
+                <th>Previous Price</th>
+                <th>Previous Date</th>
+                <th>Price Decrease</th> <!-- New column header -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script>
+        let dataTable;
+
+        async function fetchData() {
+            const response = await fetch('/data');
+            const data = await response.json();
+            const tableBody = document.querySelector('#priceTable tbody');
+            tableBody.innerHTML = ''; // Clear existing data
+
+            for (const [url, item] of Object.entries(data)) {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const imageCell = document.createElement('td');
+                const priceCell = document.createElement('td');
+                const dateCell = document.createElement('td');
+                const prevPriceCell = document.createElement('td');
+                const prevDateCell = document.createElement('td');
+                const priceDecreaseCell = document.createElement('td');
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.textContent = item.name;
+                link.target = '_blank'; // Open link in a new tab
+                nameCell.appendChild(link);
+
+                const img = document.createElement('img');
+                img.src = item.image_url;
+                img.alt = item.name;
+                img.width = 100; // Set image width
+                imageCell.appendChild(img);
+
+                priceCell.textContent = item.price_history[0].price;
+                dateCell.textContent = item.price_history[0].date;
+
+                let priceDecrease = 'No';
+                if (item.price_history.length > 1) {
+                    prevPriceCell.textContent = item.price_history[1].price;
+                    prevDateCell.textContent = item.price_history[1].date;
+
+                    if (item.price_history[0].price < item.price_history[1].price) {
+                        priceCell.classList.add('price-decrease');
+                        dateCell.classList.add('price-decrease');
+                        priceDecrease = 'Yes';
+                    }
+                } else {
+                    prevPriceCell.textContent = 'N/A';
+                    prevDateCell.textContent = 'N/A';
+                }
+
+                priceDecreaseCell.textContent = priceDecrease;
+
+                row.appendChild(nameCell);
+                row.appendChild(imageCell);
+                row.appendChild(priceCell);
+                row.appendChild(dateCell);
+                row.appendChild(prevPriceCell);
+                row.appendChild(prevDateCell);
+                row.appendChild(priceDecreaseCell);
+                tableBody.appendChild(row);
+            }
+
+            // Initialize DataTables if not already initialized
+            if (!dataTable) {
+                dataTable = $('#priceTable').DataTable({
+                    "columnDefs": [
+                        { "type": "num", "targets": 2 } // Ensure the price column is sorted numerically
+                    ]
+                });
+            } else {
+                dataTable.clear().rows.add($('#priceTable tbody tr')).draw();
+            }
+        }
+
+        // Fetch data initially and then every 10 seconds
+        fetchData();
+        setInterval(fetchData, 10000);
+    </script>
+</body>
+</html>
